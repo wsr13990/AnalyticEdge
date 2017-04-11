@@ -51,3 +51,35 @@ table(wikiTest$Vandal, prediction)
 (618+12)/nrow(wikiTest)
 
 prp(wikiRpart)
+wikiWords2 = wikiWords
+wikiWords2$HTTP = ifelse(grepl("http",wiki$Added,fixed=TRUE), 1, 0)
+table(wikiWords2$HTTP)
+
+wikiTrain2 = subset(wikiWords2, split == TRUE)
+wikiTest2 = subset(wikiWords2, split == FALSE)
+wikiRpart = rpart(Vandal~., data = wikiTrain2, method = "class")
+prediction = predict(wikiRpart, newdata = wikiTest2, type = "class")
+table(wikiTest2$Vandal, prediction)
+(609+57)/nrow(wikiTest2)
+
+wikiWords2$NumWordsAdded = rowSums(as.matrix(dtmAdded))
+wikiWords2$NumWordsRemoved = rowSums(as.matrix(dtmRemoved))
+mean(wikiWords2$NumWordsAdded)
+
+wikiTrain3 = subset(wikiWords2, split == TRUE)
+wikiTest3 = subset(wikiWords2, split == FALSE)
+wikiRpart = rpart(Vandal~., data = wikiTrain3, method = "class")
+prediction = predict(wikiRpart, newdata = wikiTest3, type = "class")
+table(wikiTest2$Vandal, prediction)
+(514+248)/nrow(wikiTest2)
+
+wikiWords3 = wikiWords2
+wikiWords3$Minor = wiki$Minor
+wikiWords3$Loggedin = wiki$Loggedin
+wikiTrain4 = subset(wikiWords3, split == TRUE)
+wikiTest4 = subset(wikiWords3, split == FALSE)
+wikiRpart = rpart(Vandal~., data = wikiTrain4, method = "class")
+prediction = predict(wikiRpart, newdata = wikiTest4, type = "class")
+table(wikiTest4$Vandal, prediction)
+(595+248)/nrow(wikiTest4)
+prp(wikiRpart)
