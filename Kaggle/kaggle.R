@@ -1,11 +1,20 @@
-setwd("C:/Users/wahyuros/Downloads")
+setwd("C:/Users/User/Downloads")
 data2016 = read.csv("train2016.csv")
 summary(data2016)
 
+#Imputing Data
+library(mice)
+imputedData = mice(data2016)
+summary(imputedData)
+completeData = complete(imputedData)
+summary(completeData)
+
 library(caTools)
-split = sample.split(data2016$Party, SplitRatio = 0.7)
-train2016 = subset(data2016, split == TRUE)
-test2016 = subset(data2016, split == FALSE)
+split = sample.split(completeData$Party, SplitRatio = 0.7)
+train2016 = subset(completeData, split == TRUE)
+test2016 = subset(completeData, split == FALSE)
+summary(train2016)
+summary(test2016)
 
 #CART Model
 library(rpart)
@@ -15,13 +24,17 @@ predTrainCart = predict(cart, type = "class")
 table(train2016$Party)
 bottomLine = 2066/nrow(train2016)
 table(train2016$Party, predTrainCart)
-cartTrainAccuracy = (1387+1092)/nrow(train2016)
+cartTrainAccuracy = (1393+1067)/nrow(train2016)
 predTestCart = predict(cart, newdata = test2016, type = "class")
 table(test2016$Party, predTestCart)
-cartTestAccuracy = (543+448)/nrow(test2016)
+cartTestAccuracy = (553+452)/nrow(test2016)
 
 #Random Forest
 library(randomForest)
 rf = randomForest(Party~., data = train2016)
-predTrainRF = predict(rf, newda)
-
+predTrainRF = predict(rf)
+table(train2016$Party,predTrainRF)
+rfTrainAccuracy = (1408+985)/nrow(train2016)
+predTestRf = predict(rf, newdata = test2016)
+table(test2016$Party, predTestRf)
+rfTestAccuracy = (593+454)/nrow(test2016)
